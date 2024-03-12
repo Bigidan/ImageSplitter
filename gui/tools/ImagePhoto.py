@@ -1,5 +1,7 @@
 import os
 from PIL import Image
+from .progress import ProgressBarVisualize
+progress_manager = ProgressBarVisualize()
 
 def get_image_size(image_path):
     try:
@@ -11,14 +13,18 @@ def get_image_size(image_path):
         return None
 
 def CountPageInfo(starting_page, required_N_pages, _chapter_path):
+    global progress_manager
     page_sum = 0
+    progress_manager.update_value(12.67, required_N_pages)
+    progress_manager.clear_progress()
     for i in range(starting_page, required_N_pages+1):
         print(f"{_chapter_path}Raw/{i}.jpg")
         curent_page = get_image_size(f"{_chapter_path}Raw/{i}.jpg")[0]
         page_sum += curent_page
+        progress_manager.progress()
     
-
     print(page_sum)
+    print("CountPageInfo end")
     return page_sum, get_image_size(f"{_chapter_path}Raw/{starting_page}.jpg")[1]
 
 def GetBigImage(startImageNumber, endImageNumber, chapter_path):
@@ -36,26 +42,34 @@ def GetBigImage(startImageNumber, endImageNumber, chapter_path):
     for y in range(len(SmallImages)):
         BigImage.paste(SmallImages[y][0], (0,start_pos))
         start_pos += SmallImages[y][1]
-    return BigImage
+    return BigImage, bL, bW
 
 def UniteImages(startImageNumber, endImageNumber, outName, _chapter_path):
+    global progress_manager
     path = _chapter_path
-    bL, bW = CountPageInfo(startImageNumber, endImageNumber, _chapter_path)
+
+    BigImage, bL, bW = GetBigImage(startImageNumber, endImageNumber, _chapter_path)
     bLL = bL/12000
 
-    BigImage = GetBigImage(startImageNumber, endImageNumber, _chapter_path)
+    
 
     if not os.path.exists(f"{path}tmp"):
         os.makedirs(f"{path}tmp")
     if not os.path.exists(f"{path}tmp/{outName}.png"):
         num_slices = int(bLL)
         slice_height = int(bL / num_slices)
+        progress_manager.update_value(39.53, num_slices)
         for i in range(num_slices):
             slice_name = f"{i+1}.png"
             start_y = i * slice_height
             end_y = (i + 1) * slice_height
             slice_img = BigImage.crop((0, start_y, bW, end_y))
             slice_img.save(f"{path}tmp/{slice_name}")
+            progress_manager.progress()
+    else:
+        progress_manager.update_value(24.88, 1)
+        progress_manager.progress()
+    print("UniteImages end")
     return bL
 def split_and_save_images(BigImage, separators, save_path):
     start_pos = 0

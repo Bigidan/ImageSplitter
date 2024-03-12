@@ -2,7 +2,7 @@ import dearpygui.dearpygui as dpg
 
 from .file_manage import CountPagesNumb
 from .ImagePhoto import UniteImages
-
+from .ImagePhoto import progress_manager
 
 def AddImagesToView(user_data):
     separator_manager, __multiplier, __mimimultiplier = user_data
@@ -24,9 +24,12 @@ def AddImagesToView(user_data):
     dpg.delete_item("navbar_list_id", children_only=True)
     dpg.delete_item("mininavbar_list_id", children_only=True)
 
-    for i in range(1, CountPagesNumb(chapter_path)+1):
-        print(i)
+    pp = CountPagesNumb(chapter_path)+1
+    progress_manager.update_value(39.14, pp*2)
+    for i in range(1, pp):
+        print(f"1: {i}")
         parts.append(dpg.load_image(chapter_path + f"tmp/{i}.png"))
+        progress_manager.progress()
     with dpg.texture_registry():
         index = 0
         for i in parts:
@@ -34,7 +37,8 @@ def AddImagesToView(user_data):
             dpg.delete_item(f"image_id_{index}")
             dpg.add_static_texture(width, height, data, tag=f"image_id_{index}")
             index += 1
-    
+            print(f"2: {i}")
+            progress_manager.progress()
 
     index = 0
     pos_x = 0
@@ -45,7 +49,7 @@ def AddImagesToView(user_data):
         dpg.draw_image(f"image_id_{index}", (0, pos_x*__mimimultiplier), (im_width*__mimimultiplier, (pos_x+im_height)*__mimimultiplier), uv_min=(0, 0), uv_max=(1, 1), parent="mininavbar_list_id")
         pos_x += im_height
         index += 1
-    
+    progress_manager.end()
     dpg.configure_item("drawlist_id", width=im_width, height=bL)
 
     dpg.configure_item("navbar_list_id", width=im_width*__multiplier+100, height=bL*__multiplier)
@@ -53,6 +57,7 @@ def AddImagesToView(user_data):
 
     dpg.configure_item("mininavbar_list_id", width=im_width*__mimimultiplier+100, height=bL*__mimimultiplier)
     dpg.configure_item("window_mininavbar_list_id", width=im_width*__mimimultiplier+100)
+    print("AddImagesToView end")
     return bL
 
 def Export(separator_manager):
