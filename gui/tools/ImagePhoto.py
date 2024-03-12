@@ -77,13 +77,13 @@ def split_and_save_images(BigImage, separators, save_path):
     if not os.path.exists(f"{save_path}/Split"):
         os.makedirs(f"{save_path}/Split")
     for separator in separators:
-        end_pos = min(separator, BigImage.size[1])
-        part_image = BigImage.crop((0, start_pos, BigImage.size[0], end_pos))
+        end_pos = min(separator, BigImage[0].size[1])
+        part_image = BigImage[0].crop((0, start_pos, BigImage[0].size[0], end_pos))
         part_image.save(f"{save_path}/Split/{index}.jpg")
         start_pos = separator
         index += 1
 
-    sub_image = BigImage.crop((0, start_pos, BigImage.width, BigImage.height))
+    sub_image = BigImage[0].crop((0, start_pos, BigImage[0].width, BigImage[0].height))
     sub_image.save(f"{save_path}/Split/{index}.jpg")
 
 def ExportImages(startImageNumber, endImageNumber, chapter_path, separators):
