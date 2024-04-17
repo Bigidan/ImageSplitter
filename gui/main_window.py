@@ -25,6 +25,17 @@ def _hsv_to_rgb(h, s, v):
     if i == 4: return (255*t, 255*p, 255*v)
     if i == 5: return (255*v, 255*p, 255*q)
 
+def callback(sender, app_data):
+    dpg.set_value("chapter_path", f"{app_data['file_path_name']}")
+    print('Обрано папку')
+    #print("Sender: ", sender)
+    #print("App Data: ", app_data)
+
+def cancel_callback(sender, app_data):
+    print('Скасовано')
+    #print("Sender: ", sender)
+    #print("App Data: ", app_data)
+
 def set_lenght(value):
     global big_image_height
     big_image_height = value
@@ -45,6 +56,12 @@ class MainWindow():
         super().__init__()
         dpg.add_viewport_drawlist(front=True, tag="viewport_back")
         dpg.draw_rectangle((0, 0), (0, 0), color=(255, 0, 0, 255), thickness=2, parent="viewport_back", tag="mininav_rel")
+
+        with dpg.window(label="Error handle", modal=True, show=False, tag="modal_id", no_title_bar=True, autosize=True):
+            dpg.add_text("Помилка", tag="error_text")
+            dpg.add_separator()
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Oк", width=75, callback=lambda: dpg.configure_item("modal_id", show=False))
 
         with dpg.window() as self.window:
             _text_id = dpg.add_text("Велике вікно")
@@ -69,15 +86,22 @@ class MainWindow():
                                     "│   └───chapter-2\n"
                                     "│       ├───Raw\n"
                                     "│       └───Translated\n")
-                        dpg.add_input_text(label="Папка із зображеннями", hint="Шлях", tag="chapter_path")
-                        _help(
-                                "Уведення:\n"
-                                "Для коректної роботи шлях потрібно вводити у форматі:\n"
-                                "С:/MangaName/Chapters/chapter-1/\n"
-                                "або\n"
-                                "С:\\MangaName\\Chapters\\chapter-1\\\n"
-                                "Завершувати потрібно завжди на \\ або / \n\n")
+                        with dpg.group(horizontal=True):
+                            dpg.add_input_text(label="Папка із зображеннями", hint="Шлях", tag="chapter_path")
+                            
+                            dpg.add_file_dialog(directory_selector=True, show=False, callback=callback, tag="file_dialog_id",
+                                                cancel_callback=cancel_callback, width=1000, height=700)
+                            dpg.add_button(label="Огляд", callback=lambda: dpg.show_item("file_dialog_id"))
+                            _help(
+                                    "Уведення:\n"
+                                    "Для коректної роботи шлях потрібно вводити у форматі:\n"
+                                    "С:/MangaName/Chapters/chapter-1/\n"
+                                    "або\n"
+                                    "С:\\MangaName\\Chapters\\chapter-1\\\n"
+                                    "Можна скористатися кнопкою Огляду.\n\n")
+
                         dpg.add_button(label="Завантажити", user_data=[separator_manager, 0.2, 0.1], callback=lambda s, a, u: set_lenght(AtV(u)))
+
                         with dpg.group(horizontal=True):
                             dpg.add_progress_bar(label="Обробка...", tag="images_loading_bar", default_value=0.0, overlay="0%")
                             with dpg.tooltip(dpg.last_item()):

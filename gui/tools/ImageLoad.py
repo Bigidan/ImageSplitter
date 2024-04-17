@@ -4,16 +4,20 @@ from .file_manage import CountPagesNumb
 from .ImagePhoto import UniteImages
 from .ImagePhoto import progress_manager
 
+
 def AddImagesToView(user_data):
     separator_manager, __multiplier, __mimimultiplier = user_data
     separator_manager.clear_all_separators()
     chapter_path = dpg.get_value("chapter_path")
+    if (chapter_path == "" or chapter_path.isspace()):
+        dpg.set_value("error_text", f"Схоже вказаний шлях порожній.")
+        dpg.configure_item("modal_id", show=True)
+        return
+
     if chapter_path.endswith("/") or chapter_path.endswith("\\"):
         pass
     else:
         chapter_path += "/"
-    if not (bool(chapter_path and not chapter_path.isspace())):
-        return
     
     page_numb = CountPagesNumb(chapter_path, "Raw")
     
@@ -28,6 +32,12 @@ def AddImagesToView(user_data):
     progress_manager.update_value(39.14, pp*2)
     for i in range(1, pp):
         print(f"1: {i}")
+        if dpg.load_image(chapter_path + f"tmp/{i}.png") is None:
+            dpg.set_value("error_text", "Не вдалося завантажити зображення.\nСпробуйте використовувати шлях без кирилиці.")
+            dpg.configure_item("modal_id", show=True)
+            progress_manager.clear_progress()
+
+        print(dpg.load_image(chapter_path + f"tmp/{i}.png"))
         parts.append(dpg.load_image(chapter_path + f"tmp/{i}.png"))
         progress_manager.progress()
     with dpg.texture_registry():

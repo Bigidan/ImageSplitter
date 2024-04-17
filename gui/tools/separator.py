@@ -21,6 +21,8 @@ class SeparatorManager:
         else:
             chapter_path += "/"
         if not (bool(chapter_path and not chapter_path.isspace())):
+            dpg.set_value("error_text", "Схоже шлях порожній.")
+            dpg.configure_item("modal_id", show=True)
             return
         
         self.chapter_path = chapter_path

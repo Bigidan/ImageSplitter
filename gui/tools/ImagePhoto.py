@@ -1,7 +1,25 @@
 import os
 from PIL import Image
 from .progress import ProgressBarVisualize
+import dearpygui.dearpygui as dpg
+
 progress_manager = ProgressBarVisualize()
+
+def get_first_image_number(chapter_path):
+    try:
+        files = os.listdir(chapter_path + "/Raw/")
+        numbers = []
+        print(files)
+        for filename in files:
+            try:
+                number = int(''.join(filter(str.isdigit, filename)))
+                numbers.append(number)
+            except ValueError:
+                pass
+        return min(numbers) if numbers else None
+    except FileNotFoundError:
+        print("Папка не знайдена.")
+        return None
 
 def get_image_size(image_path):
     try:
@@ -9,7 +27,8 @@ def get_image_size(image_path):
             width, height = img.size
             return height, width
     except Exception as e:
-        print(f"Помилка: {str(e)}")
+        dpg.set_value("error_text", f"Вхідні дані: {image_path}\nПомилка: {str(e)}")
+        dpg.configure_item("modal_id", show=True)
         return None
 
 def CountPageInfo(starting_page, required_N_pages, _chapter_path):
@@ -28,6 +47,8 @@ def CountPageInfo(starting_page, required_N_pages, _chapter_path):
     return page_sum, get_image_size(f"{_chapter_path}Raw/{starting_page}.jpg")[1]
 
 def GetBigImage(startImageNumber, endImageNumber, chapter_path):
+    startImageNumber = get_first_image_number(chapter_path)
+    print(startImageNumber)
     path = chapter_path
 
     bL, bW = CountPageInfo(startImageNumber, endImageNumber, chapter_path)

@@ -11,6 +11,7 @@ def start():
     main_window = gui.MainWindow()
     dpg.set_primary_window(main_window.window, True)
 
+
 dpg.set_frame_callback(2, start)
 dpg.setup_dearpygui()
 dpg.create_viewport(title='Image Splitter by Bigidun', width=1700, height=900, small_icon="./icon.ico", large_icon="./icon.ico")
