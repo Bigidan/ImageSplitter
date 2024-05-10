@@ -4,6 +4,8 @@ from .progress import ProgressBarVisualize
 import dearpygui.dearpygui as dpg
 
 progress_manager = ProgressBarVisualize()
+def get_files_extention():
+    return dpg.get_value("chapter_extention")
 
 def get_first_image_number(chapter_path):
     try:
@@ -37,14 +39,14 @@ def CountPageInfo(starting_page, required_N_pages, _chapter_path):
     progress_manager.update_value(12.67, required_N_pages)
     progress_manager.clear_progress()
     for i in range(starting_page, required_N_pages+1):
-        print(f"{_chapter_path}Raw/{i}.jpg")
-        curent_page = get_image_size(f"{_chapter_path}Raw/{i}.jpg")[0]
+        print(f"{_chapter_path}Raw/{i}.{get_files_extention()}")
+        curent_page = get_image_size(f"{_chapter_path}Raw/{i}.{get_files_extention()}")[0]
         page_sum += curent_page
         progress_manager.progress()
     
     print(page_sum)
     print("CountPageInfo end")
-    return page_sum, get_image_size(f"{_chapter_path}Raw/{starting_page}.jpg")[1]
+    return page_sum, get_image_size(f"{_chapter_path}Raw/{starting_page}.{get_files_extention()}")[1]
 
 def GetBigImage(startImageNumber, endImageNumber, chapter_path):
     startImageNumber = get_first_image_number(chapter_path)
@@ -56,7 +58,7 @@ def GetBigImage(startImageNumber, endImageNumber, chapter_path):
 
     SmallImages = []
     for i in range(startImageNumber, endImageNumber+1):
-        SmallImages.append([Image.open(f'{path}Raw/{i}.jpg'), get_image_size(f'{path}Raw/{i}.jpg')[0]])
+        SmallImages.append([Image.open(f'{path}Raw/{i}.{get_files_extention()}'), get_image_size(f'{path}Raw/{i}.{get_files_extention()}')[0]])
     print()
 
     start_pos=0
@@ -100,12 +102,12 @@ def split_and_save_images(BigImage, separators, save_path):
     for separator in separators:
         end_pos = min(separator, BigImage[0].size[1])
         part_image = BigImage[0].crop((0, start_pos, BigImage[0].size[0], end_pos))
-        part_image.save(f"{save_path}/Split/{index}.jpg")
+        part_image.save(f"{save_path}/Split/{index}.{get_files_extention()}")
         start_pos = separator
         index += 1
 
     sub_image = BigImage[0].crop((0, start_pos, BigImage[0].width, BigImage[0].height))
-    sub_image.save(f"{save_path}/Split/{index}.jpg")
+    sub_image.save(f"{save_path}/Split/{index}.{get_files_extention()}")
 
 def ExportImages(startImageNumber, endImageNumber, chapter_path, separators):
     BigImage = GetBigImage(startImageNumber, endImageNumber, chapter_path)

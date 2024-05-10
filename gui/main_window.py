@@ -99,7 +99,8 @@ class MainWindow():
                                     "або\n"
                                     "С:\\MangaName\\Chapters\\chapter-1\\\n"
                                     "Можна скористатися кнопкою Огляду.\n\n")
-
+                            
+                        dpg.add_input_text(label="розширення фалів (без крапки)", hint="Шлях", tag="chapter_extention", default_value="jpg")
                         dpg.add_button(label="Завантажити", user_data=[separator_manager, 0.2, 0.1], callback=lambda s, a, u: set_lenght(AtV(u)))
 
                         with dpg.group(horizontal=True):
