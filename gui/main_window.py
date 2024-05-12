@@ -28,8 +28,6 @@ def _hsv_to_rgb(h, s, v):
 def callback(sender, app_data):
     dpg.set_value("chapter_path", f"{app_data['file_path_name']}")
     print('Обрано папку')
-    #print("Sender: ", sender)
-    #print("App Data: ", app_data)
 
 def cancel_callback(sender, app_data):
     print('Скасовано')
@@ -100,7 +98,7 @@ class MainWindow():
                                     "С:\\MangaName\\Chapters\\chapter-1\\\n"
                                     "Можна скористатися кнопкою Огляду.\n\n")
                             
-                        dpg.add_input_text(label="розширення фалів (без крапки)", hint="Шлях", tag="chapter_extention", default_value="jpg")
+                        dpg.add_input_text(label="розширення фалів, яке буде на виході\n(без крапки)", hint="Шлях", tag="chapter_extention", default_value="webp")
                         dpg.add_button(label="Завантажити", user_data=[separator_manager, 0.2, 0.1], callback=lambda s, a, u: set_lenght(AtV(u)))
 
                         with dpg.group(horizontal=True):
